@@ -3,6 +3,7 @@
 #include "Game.h"
 #include <map>
 #include <vector>
+#include <unordered_set>
 namespace mrsd
 {
 	struct Prediction
@@ -24,6 +25,10 @@ namespace mrsd
 		private:
 			Player* p;
 			float currentTime;
+	        std::vector<int> safeSpots;
+			// std::unordered_set<int> safeSpots;
+
+
 			/*
 			 * Track projectile and determine where and when it will hit ground.
 			 */

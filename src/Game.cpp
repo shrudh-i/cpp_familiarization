@@ -9,10 +9,12 @@ namespace mrsd
 	Game::Game(int w, int h, float timestep): w(w), h(h), timestep(timestep)
 	{
 		gravity = -9.81f;
+		// dynamic allocation of memory; 0 to w inclusive
 		dangerZone = new int[w+1];
+		// areas are no dangerous in the beginning
 		for(int i = 0; i < w+1; ++i) dangerZone[i] = 0;
 	}
-
+	// destructor of Game class
 	Game::~Game()
 	{
 		delete[] dangerZone;
@@ -27,7 +29,7 @@ namespace mrsd
 	{
 		Enemy e;
 		e.x = x; e.y = y;
-		e.firingRandomness = 0;
+		e.firingRandomness = 5;
 		e.firingChance = 0;
 		e.firingSpeed = 5;
 		e.minForce = 0;
@@ -40,6 +42,8 @@ namespace mrsd
 	bool Game::tickEnemy(Enemy& e)
 	{
 		const float t = timestep;
+		// updates angle of enemy's turret
+		// change in angle over time: e.turretSpeed*t,e.maxAngle
 		e.turretAngle = std::fmod(e.turretAngle + e.turretSpeed*t,e.maxAngle - e.minAngle);
 		e.firingChance = e.firingChance + e.firingSpeed;
 		int shouldFire = (1 - e.firingRandomness) * 100 + e.firingRandomness * (std::rand() % 100);
@@ -59,6 +63,7 @@ namespace mrsd
 	bool Game::tickPlayer(Player& p)
 	{
 		p.x = std::min((float)w, std::max(0.f, p.x));
+		// player is dead if the player is in the danger zone
 		if(dangerZone[(int)std::floor(p.x)] > 0 &&
 			dangerZone[(int)std::ceil(p.x)] > 0)
 		{
@@ -72,6 +77,7 @@ namespace mrsd
 	{
 		const float t = timestep;
 		e.time += t;
+		// explosion exceeds time limit: effects are removed from dangerzone
 		if(e.time > explosionTime)
 		{
 			for(int i = std::floor(e.x - explosionSize);
@@ -92,6 +98,7 @@ namespace mrsd
 		p.x += p.vx * t;
 		p.y += p.vy * t + .5f * t * t * gravity;
 		p.vy += t * gravity;
+		// if the projectile hits the ground, it explodes
 		if( p.y <= 0 )
 		{
 			explode(p.x);
@@ -99,7 +106,7 @@ namespace mrsd
 		}
 		return true;
 	}
-
+	// updates the game state for each timestep
 	void Game::tick()
 	{
 		time += timestep;
