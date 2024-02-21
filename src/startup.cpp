@@ -29,8 +29,8 @@ int main(void)
 
 	//Setup Scenario
 	// setupScenarioEasy(g);
-	// setupScenarioMedium(g);
-	setupScenarioHard(g);
+	setupScenarioMedium(g);
+	// setupScenarioHard(g);
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	std::chrono::milliseconds wait(1000/60);
 	while(!glfe.shouldClose(g))
